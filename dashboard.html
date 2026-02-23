@@ -1,0 +1,579 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZER01NE 67 | API Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #edf9ff;
+      --bg-2: #ddf1ff;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --line: #9eddf2;
+      --brand: #0891b2;
+      --brand-2: #0ea5e9;
+      --ok: #10b981;
+      --shadow: 0 14px 40px rgba(2, 132, 199, 0.12);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Manrope', sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(920px 380px at 8% -10%, rgba(14, 165, 233, 0.14), transparent 60%),
+        radial-gradient(760px 340px at 95% 2%, rgba(6, 182, 212, 0.12), transparent 60%),
+        linear-gradient(180deg, var(--bg), var(--bg-2));
+      min-height: 100vh;
+    }
+
+    .bg-bubbles {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .bg-bubbles .bubble {
+      position: absolute;
+      bottom: -140px;
+      border-radius: 50%;
+      border: 1px solid rgba(17, 148, 178, 0.45);
+      background: radial-gradient(circle at 30% 28%, rgba(255,255,255,0.78), rgba(217,243,255,0.32));
+      backdrop-filter: blur(2px);
+      box-shadow: inset 0 8px 16px rgba(255,255,255,0.35), 0 10px 30px rgba(10, 127, 155, 0.18);
+      animation: floatUp var(--dur) linear infinite;
+      animation-delay: var(--delay);
+      opacity: var(--alpha);
+    }
+
+    @keyframes floatUp {
+      0% { transform: translate3d(0, 0, 0); }
+      100% { transform: translate3d(0, -120vh, 0); }
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 18px 56px;
+    }
+
+    .topbar {
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid #29aecd;
+      border-radius: 22px;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(8px);
+    }
+
+    .brand {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--ok);
+      box-shadow: 0 0 0 6px rgba(16, 185, 129, 0.14);
+    }
+
+    .pill {
+      font-size: 13px;
+      color: #0b5f72;
+      background: #e0f7ff;
+      border: 1px solid #bdeeff;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-weight: 700;
+    }
+
+    .hero {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid #29aecd;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-copy {
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(30px, 4.5vw, 50px);
+      line-height: 1.04;
+      letter-spacing: -0.02em;
+    }
+
+    .sub {
+      margin: 12px 0 0;
+      font-size: 16px;
+      color: var(--muted);
+      max-width: 62ch;
+    }
+
+    .hero-metrics {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .metric {
+      background: #f8fdff;
+      border: 1px solid #29aecd;
+      border-radius: 16px;
+      padding: 10px;
+    }
+
+    .metric .k {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #0c7188;
+      font-weight: 700;
+    }
+
+    .metric .v {
+      margin-top: 4px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .hero-visual {
+      position: relative;
+      overflow: hidden;
+      min-height: 360px;
+      background: linear-gradient(140deg, #eaf8ff, #d8f1ff);
+      border: 1px solid #159ec2;
+    }
+
+    .hero-visual::before {
+      content: "";
+      position: absolute;
+      inset: -22% auto auto -18%;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(14, 165, 233, 0.24), transparent 64%);
+      pointer-events: none;
+    }
+
+    .hero-image {
+      position: absolute;
+      right: 5%;
+      bottom: 0;
+      width: min(95%, 520px);
+      object-fit: contain;
+      transform-origin: center bottom;
+      filter: drop-shadow(0 24px 28px rgba(8, 145, 178, 0.22));
+      opacity: 0;
+      transition: opacity .25s ease;
+      z-index: 1;
+    }
+
+    .hero-visual.is-loading .hero-image { opacity: 0; }
+    .hero-visual.is-ready .hero-image { opacity: 1; }
+
+    .image-loading {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(120deg, rgba(255,255,255,.55), rgba(224,247,255,.65));
+      backdrop-filter: blur(2px);
+      z-index: 2;
+    }
+
+    .loader-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid #bdeeff;
+      border-radius: 999px;
+      padding: 8px 12px;
+      color: #0b5f72;
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(255,255,255,.9);
+    }
+
+    .loader-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid #8eddf7;
+      border-top-color: #0891b2;
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .content {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .section { padding: 20px; }
+
+    h2 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      letter-spacing: -0.01em;
+    }
+
+    p { margin: 0; color: var(--muted); }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      line-height: 1.55;
+      background: #f5fbff;
+      border: 1px solid #29aecd;
+      border-radius: 14px;
+      padding: 12px;
+      margin-top: 12px;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .endpoints {
+      margin: 10px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 8px;
+    }
+
+    .endpoints li {
+      background: #f9fdff;
+      border: 1px solid #29aecd;
+      border-radius: 14px;
+      padding: 9px 10px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .method {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      color: #0b5f72;
+      min-width: 42px;
+    }
+
+    .form {
+      margin-top: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #0b5f72;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    input {
+      width: 100%;
+      margin-top: 6px;
+      border: 1px solid #29aecd;
+      border-radius: 14px;
+      padding: 11px 12px;
+      font: inherit;
+      background: #fcfeff;
+      color: var(--text);
+    }
+
+    input:focus {
+      outline: 2px solid rgba(14, 165, 233, 0.22);
+      border-color: #159ec2;
+    }
+
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 11px 14px;
+      background: linear-gradient(90deg, var(--brand), var(--brand-2));
+      color: white;
+      font-family: inherit;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+    }
+
+    #apiResult {
+      margin-top: 8px;
+      min-height: 36px;
+      font-size: 13px;
+      color: #0b5f72;
+      background: #f4fbff;
+      border: 1px dashed #159ec2;
+      border-radius: 14px;
+      padding: 9px 10px;
+      word-break: break-all;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 18px;
+      color: #527184;
+      font-size: 12px;
+    }
+
+    @media (max-width: 920px) {
+      .hero { grid-template-columns: 1fr; }
+      .content { grid-template-columns: 1fr; }
+      .hero-visual { min-height: 320px; }
+      .hero-image {
+        right: 50%;
+        transform: translateX(50%);
+        width: min(88%, 420px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-bubbles" aria-hidden="true"></div>
+  <main class="page">
+    <section class="topbar">
+      <div class="brand"><span class="dot"></span>ZER01NE 67 API</div>
+      <div class="pill">Presentation-Ready Dashboard</div>
+    </section>
+
+    <section class="hero">
+      <article class="card hero-copy">
+        <h1>Bright, Clear, Professional API Experience</h1>
+        <p class="sub">Designed for demos and technical reviews with less visual noise, stronger hierarchy, and focus on the system metrics that matter.</p>
+
+        <div class="hero-metrics">
+          <div class="metric"><div class="k">Earth Points</div><div class="v">47/47</div></div>
+          <div class="metric"><div class="k">Safety Logics</div><div class="v">20/20</div></div>
+          <div class="metric"><div class="k">System Total</div><div class="v">67</div></div>
+        </div>
+      </article>
+
+      <article class="card hero-visual is-loading">
+        <div class="image-loading" aria-live="polite">
+          <div class="loader-chip"><span class="loader-dot"></span>Loading visual</div>
+        </div>
+        <img
+          class="hero-image"
+          data-file="Gemini_Generated_Image_sutim8sutim8suti.png"
+          alt="ZER01NE visual"
+          loading="eager"
+        />
+      </article>
+    </section>
+
+    <section class="content">
+      <article class="card section">
+        <h2>Quick API Start</h2>
+        <p>Use your generated key with any endpoint below.</p>
+        <div class="mono">curl -X POST http://localhost:5000/api-key/generate \
+  -H "Content-Type: application/json" \
+  -d '{"org_name":"Demo Org","contact_email":"demo@example.com","use_case":"Presentation"}'</div>
+
+        <ul class="endpoints">
+          <li><span><span class="method">GET</span> /health</span><span>Service status</span></li>
+          <li><span><span class="method">GET</span> /stats</span><span>System metrics</span></li>
+          <li><span><span class="method">POST</span> /pool/register</span><span>Register pool</span></li>
+          <li><span><span class="method">POST</span> /safety/check</span><span>Run safety check</span></li>
+        </ul>
+      </article>
+
+      <article class="card section">
+        <h2>Generate API Key</h2>
+        <p>Fast test key creation for your presentation demo.</p>
+        <form id="apiForm" class="form">
+          <label>Organization<input id="org" required placeholder="Phoenix Child Safety" /></label>
+          <label>Email<input id="email" type="email" required placeholder="admin@org.com" /></label>
+          <label>Use Case<input id="useCase" required placeholder="Pool monitoring" /></label>
+          <button type="submit">Generate Key</button>
+        </form>
+        <div id="apiResult">Your generated key will appear here.</div>
+      </article>
+    </section>
+
+    <footer class="footer">ZER01NE 67 • Child Safety API • 47 + 20 = 67</footer>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script>
+    const image = document.querySelector('.hero-image');
+    const visual = document.querySelector('.hero-visual');
+    const loader = document.querySelector('.image-loading');
+    const bubblesLayer = document.querySelector('.bg-bubbles');
+
+    const createGlassBubbles = () => {
+      if (!bubblesLayer || bubblesLayer.childElementCount) return;
+      const total = 18;
+      for (let i = 0; i < total; i++) {
+        const b = document.createElement('span');
+        const size = Math.floor(18 + Math.random() * 110);
+        const left = Math.random() * 100;
+        const dur = (12 + Math.random() * 16).toFixed(2) + 's';
+        const delay = (-Math.random() * 22).toFixed(2) + 's';
+        const alpha = (0.15 + Math.random() * 0.35).toFixed(2);
+
+        b.className = 'bubble';
+        b.style.width = `${size}px`;
+        b.style.height = `${size}px`;
+        b.style.left = `${left}%`;
+        b.style.setProperty('--dur', dur);
+        b.style.setProperty('--delay', delay);
+        b.style.setProperty('--alpha', alpha);
+        bubblesLayer.appendChild(b);
+      }
+    };
+
+    createGlassBubbles();
+
+    const startHeroMotion = () => {
+      if (!window.gsap || !image || image.dataset.animated === '1') return;
+      image.dataset.animated = '1';
+
+      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+      tl.from('.hero-copy', { y: 26, opacity: 0, duration: 0.65 })
+        .from(visual, { scale: 0.98, opacity: 0, duration: 0.6 }, '-=0.45')
+        .from(image, { y: 38, rotate: -4, opacity: 0, duration: 0.75 }, '-=0.42');
+
+      gsap.to(image, {
+        y: -12,
+        duration: 2.3,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut'
+      });
+
+      visual.addEventListener('mousemove', (e) => {
+        const rect = visual.getBoundingClientRect();
+        const nx = (e.clientX - rect.left) / rect.width - 0.5;
+        const ny = (e.clientY - rect.top) / rect.height - 0.5;
+        gsap.to(image, {
+          x: nx * 10,
+          rotate: nx * 2,
+          filter: `drop-shadow(${nx * 18}px ${24 + ny * 10}px 30px rgba(8,145,178,.24))`,
+          duration: 0.35,
+          overwrite: true
+        });
+      });
+
+      visual.addEventListener('mouseleave', () => {
+        gsap.to(image, {
+          x: 0,
+          rotate: 0,
+          filter: 'drop-shadow(0 24px 28px rgba(8,145,178,.22))',
+          duration: 0.4
+        });
+      });
+    };
+
+    const handleImageReady = () => {
+      visual.classList.remove('is-loading');
+      visual.classList.add('is-ready');
+      loader?.remove();
+      startHeroMotion();
+    };
+
+    const resolveHeroImage = () => {
+      if (!image) return;
+      const filename = image.dataset.file || 'Gemini_Generated_Image_sutim8sutim8suti.png';
+      const candidates = [
+        `/Images/${filename}`,
+        `Images/${filename}`,
+        `./Images/${filename}`
+      ];
+
+      const tryLoad = (index = 0) => {
+        if (index >= candidates.length) {
+          visual.classList.remove('is-loading');
+          visual.classList.add('is-ready');
+          if (loader) loader.textContent = 'Image not found';
+          return;
+        }
+
+        const probe = new Image();
+        probe.onload = () => {
+          image.src = candidates[index];
+          handleImageReady();
+        };
+        probe.onerror = () => tryLoad(index + 1);
+        probe.src = candidates[index];
+      };
+
+      tryLoad(0);
+    };
+
+    resolveHeroImage();
+
+    const form = document.getElementById('apiForm');
+    const result = document.getElementById('apiResult');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      result.textContent = 'Generating key...';
+
+      const payload = {
+        org_name: document.getElementById('org').value.trim(),
+        contact_email: document.getElementById('email').value.trim(),
+        use_case: document.getElementById('useCase').value.trim()
+      };
+
+      try {
+        const res = await fetch('/api-key/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          result.textContent = data.error || 'Could not generate key.';
+          return;
+        }
+
+        result.textContent = `API key: ${data.api_key}`;
+      } catch {
+        result.textContent = 'Network error while generating key.';
+      }
+    });
+  </script>
+</body>
+</html>
